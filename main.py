@@ -1,8 +1,8 @@
 import numpy as np
 import itertools
-import random
 import copy
 import matplotlib.pyplot as plt
+from time import time
 
 plt.rcParams['font.sans-serif'] = ['SimHei']
 plt.rcParams['axes.unicode_minus'] = False
@@ -40,7 +40,7 @@ class GA:
             self.pos.append([float(linedata[0]), float(linedata[1])])
         infile.close()
         self.cityNum = len(self.pos)  # 城市数量，染色体长度
-        self.distance = np.zeros([self.M, self.cityNum], dtype=int)
+        self.distance = np.zeros([self.cityNum, self.cityNum], dtype=int)
 
     # 初始化dist矩阵
     def InitDist(self):
@@ -109,16 +109,16 @@ class GA:
         self.SelectChild()  # 选择
         rand = np.arange(self.M)
         np.random.shuffle(rand)
-        for k in range(0, self.M, 2):
+        for k in range(1, self.M, 2):
             rateC = np.random.random(1)
             if rateC < self.pCorss:  # 交叉
-                self.OrderCross(rand[k], rand[k + 1])
+                self.OrderCross(rand[k], rand[k - 1])
             rateM = np.random.random(1)
             if rateM < self.pMutate:  # 变异
                 self.Variation(rand[k])
             rateM = np.random.random(1)
             if rateM < self.pMutate:
-                self.Variation(rand[k + 1])
+                self.Variation(rand[k - 1])
 
     # 产生2个索引，用于交叉和变异
     def RandomRange(self):
@@ -228,9 +228,11 @@ class GA:
 
 
 def main():
+    t1=time()
     ga = GA(M=100, T=1000, pCorss=0.7, pMutate=0.3)
     ga.Run()
-    # ga.MST()
+    t2=time()
+    print("耗时:"+str(t2-t1))
     ga.Show()
 
 
